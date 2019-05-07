@@ -24,5 +24,8 @@ describe Account do
       account.withdraw(50)
       expect(account.balance).to eq 50
     end
+    it 'should raise an error if withdaw will bring account to negative balance' do
+      expect { account.withdraw(50) }.to raise_error("Error: Insufficient Funds")
+    end
   end
 end
