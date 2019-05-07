@@ -17,4 +17,12 @@ describe Account do
       expect(account.balance).to eq 50
     end
   end
+
+  describe '#withdraw' do
+    it 'should subtract value from balance' do
+      account.deposit(100)
+      account.withdraw(50)
+      expect(account.balance).to eq 50
+    end
+  end
 end
