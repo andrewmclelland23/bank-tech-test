@@ -1,7 +1,6 @@
 require 'event_log.rb'
 
 describe EventLog do
-
   let(:event) { double :Event, new: 'something' }
   subject(:event_log) { described_class.new(event) }
 
@@ -14,7 +13,7 @@ describe EventLog do
       time = Time.now
       event_log.add(value: 10, balance: 100, timestamp: time)
       expect(event).to have_received(:new)
-                   .with(value: 10, balance: 100, timestamp: time)
+        .with(value: 10, balance: 100, timestamp: time)
     end
   end
 end

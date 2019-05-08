@@ -1,6 +1,7 @@
 require_relative 'event_log'
 require_relative 'print'
 
+# Responsible for managing balance through withdrawals and deposits
 class Account
   attr_reader :balance
 

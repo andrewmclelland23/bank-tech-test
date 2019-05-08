@@ -1,7 +1,7 @@
 require_relative 'event'
 
+# Responsible for logging account events
 class EventLog
-
   attr_reader :events
 
   def initialize(event = Event)
@@ -13,5 +13,4 @@ class EventLog
     new_event = @event.new(value: value, balance: balance, timestamp: timestamp)
     @events.unshift new_event
   end
-
 end

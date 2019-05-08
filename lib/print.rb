@@ -1,9 +1,9 @@
+# Responsible for printing messages
 class Print
   def self.statement(event_log)
     statement = event_log.events.map do |event|
       [format_date(event.timestamp), format_credit(event.value),
-       format_debit(event.value), format_money(event.balance)
-      ].join('|| ')
+       format_debit(event.value), format_money(event.balance)].join('|| ')
     end
     puts statement.unshift('date || credit || debit || balance').join("\n")
   end
@@ -16,22 +16,12 @@ class Print
     puts "Withdrawal succesful\nBalance: £#{format_money(balance)}"
   end
 
-  private
-
   def self.format_credit(value)
-     if value > 0
-       format_money(value) + ' '
-     else
-       nil
-     end
+    format_money(value) + ' ' if value > 0
   end
 
   def self.format_debit(value)
-    if value < 0
-      format_money(-value) + ' '
-    else
-      nil
-    end
+    format_money(-value) + ' ' if value < 0
   end
 
   def self.format_date(datetime)
@@ -41,4 +31,7 @@ class Print
   def self.format_money(value)
     format '%.2f', value
   end
+
+  private_class_method :format_credit, :format_debit,
+                       :format_date, :format_money
 end

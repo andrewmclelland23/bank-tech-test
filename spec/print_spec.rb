@@ -48,13 +48,13 @@ describe Print do
   describe '#deposit_message' do
     it 'should return formatted message when called with a balance' do
       expect { print.deposit_message(50) }
-              .to output("Deposit succesful\nBalance: £50.00\n").to_stdout
+        .to output("Deposit succesful\nBalance: £50.00\n").to_stdout
     end
   end
   describe '#withdrawal_message' do
     it 'should return formatted message when called with a balance' do
       expect { print.withdrawal_message(25.23) }
-              .to output("Withdrawal succesful\nBalance: £25.23\n").to_stdout
+        .to output("Withdrawal succesful\nBalance: £25.23\n").to_stdout
     end
   end
 end
