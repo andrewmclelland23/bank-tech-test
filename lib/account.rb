@@ -1,3 +1,5 @@
+require 'timecop'
+
 class Account
 
   attr_reader :balance, :history
@@ -7,8 +9,9 @@ class Account
     @history = []
   end
 
-  def deposit(value)
+  def deposit(value, event = Event.new)
     @balance += value
+    @history << event.create(value, Time.now)
   end
 
   def withdraw(value)
