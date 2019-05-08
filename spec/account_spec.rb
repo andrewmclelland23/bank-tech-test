@@ -27,6 +27,13 @@ describe Account do
     it 'should record deposit event in history array' do
       expect { account.deposit(50, event) }.to change{ account.history.count }.from(0).to(1)
     end
+    it 'should raise an error if value is not a number' do
+      expect { account.deposit('hi') }.to raise_error("Error: Invalid Entry")
+    end
+    it 'should raise an error if value is <= 0' do
+      expect { account.deposit(0) }.to raise_error("Error: Invalid Entry")
+      expect { account.deposit(-1) }.to raise_error("Error: Invalid Entry")
+    end
   end
 
   describe '#withdraw' do
@@ -37,6 +44,13 @@ describe Account do
     end
     it 'should raise an error if withdaw will bring account to negative balance' do
       expect { account.withdraw(1) }.to raise_error("Error: Insufficient Funds")
+    end
+    it 'should raise an error if value is not a number' do
+      expect { account.withdraw('hi') }.to raise_error("Error: Invalid Entry")
+    end
+    it 'should raise an error if value is <= 0' do
+      expect { account.withdraw(0) }.to raise_error("Error: Invalid Entry")
+      expect { account.withdraw(-1) }.to raise_error("Error: Invalid Entry")
     end
     it 'should create a new Event with negative value, new balance and timestamp' do
       time = Time.now
