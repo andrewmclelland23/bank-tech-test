@@ -3,7 +3,7 @@
 A tech test to practice and showcase my methodology and skill in programming in an OO language.
 
 ## Technologies
-  Language: Ruby
+  Language: Ruby  
   Test Framework: RSPEC
 
 ## Requirements
