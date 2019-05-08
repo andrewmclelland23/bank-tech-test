@@ -1,3 +1,5 @@
+require_relative 'event'
+
 class Account
 
   attr_reader :balance, :history
@@ -9,16 +11,14 @@ class Account
 
   def deposit(value, event = Event)
     @balance += value
-    event.new(value: value, balance: @balance, timestamp: Time.now)
-    @history << event
+    @history << event.new(value: value, balance: @balance, timestamp: Time.now)
   end
 
   def withdraw(value, event = Event)
     insufficient_fund_error unless @balance >= value
 
     @balance -= value
-    event.new(value: -value, balance: @balance, timestamp: Time.now)
-    @history << event
+    @history << event.new(value: -value, balance: @balance, timestamp: Time.now)
   end
 
   private
