@@ -1,6 +1,6 @@
 # Bank Tech Test
 
-A simple tech test to practice and showcase my methodology and skill in programming in an OO language.
+A tech test to practice and showcase my methodology and skill in programming in an OO language.
 
 ## Technologies
   Language: Ruby
