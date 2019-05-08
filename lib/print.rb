@@ -1,13 +1,11 @@
 class Print
   def self.statement(event_log)
-    statement_array = event_log.events.map do |event|
-      date = "#{format_date(event.timestamp)} || "
-      credit = event.value > 0 ? "#{format_money(event.value)} || " : '|| '
-      debit = event.value > 0 ? '|| ' : "#{format_money(-event.value)} || "
-      balance = format_money(event.balance)
-      date + credit + debit + balance
+    statement = event_log.events.map do |event|
+      [format_date(event.timestamp), format_credit(event.value),
+       format_debit(event.value), format_money(event.balance)
+      ].join('|| ')
     end
-    puts statement_array.unshift('date || credit || debit || balance').join("\n")
+    puts statement.unshift('date || credit || debit || balance').join("\n")
   end
 
   def self.deposit_message(balance)
@@ -20,8 +18,24 @@ class Print
 
   private
 
+  def self.format_credit(value)
+     if value > 0
+       format_money(value) + ' '
+     else
+       nil
+     end
+  end
+
+  def self.format_debit(value)
+    if value < 0
+      format_money(-value) + ' '
+    else
+      nil
+    end
+  end
+
   def self.format_date(datetime)
-    datetime.strftime('%d/%m/%Y')
+    datetime.strftime('%d/%m/%Y') + ' '
   end
 
   def self.format_money(value)
