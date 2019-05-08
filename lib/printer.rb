@@ -1,6 +1,6 @@
 class Printer
-  def self.statement(account)
-    statement_array = account.history.map do |event|
+  def self.statement(event_log)
+    statement_array = event_log.events.map do |event|
       date = "#{format_date(event.timestamp)} || "
       credit = event.value > 0 ? "#{format_money(event.value)} || " : '|| '
       debit = event.value > 0 ? '|| ' : "#{format_money(-event.value)} || "

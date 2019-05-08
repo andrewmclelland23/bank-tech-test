@@ -2,32 +2,25 @@ require 'account'
 require 'timecop'
 
 describe Account do
-  let(:event) { double :Event, new: 'something' }
+  let(:event_log) { double :event_log, add: 'something' }
   let(:printer) { double :printer, statement: 'Stand in for statement' }
-  subject(:account) { described_class.new(printer) }
+  subject(:account) { described_class.new(printer, event_log) }
 
   it 'should have 0 balance when initialised' do
     expect(account.balance).to eq 0
   end
-  it 'should have empty history array when initialised' do
-    expect(account.history).to eq []
-  end
 
   describe '#deposit' do
     it 'should add value to balance' do
-      account.deposit(50, event)
+      account.deposit(50)
       expect(account.balance).to eq 50
     end
-    it 'should create a new Event with value, new balance and timestamp' do
+    it 'should call add @event_log.add method with correct arguments' do
       time = Time.now
       Timecop.freeze(time)
-      account.deposit(50, event)
-      expect(event).to have_received(:new)
+      account.deposit(50)
+      expect(event_log).to have_received(:add)
         .with(value: 50, balance: 50, timestamp: time)
-    end
-    it 'should record deposit event in history array' do
-      expect { account.deposit(50, event) }.to change { account.history.count }
-        .from(0).to(1)
     end
     it 'should raise an error if value is not a number' do
       expect { account.deposit('hi') }.to raise_error('Input Error: Entry must be a number bigger than 0')
@@ -46,7 +39,7 @@ describe Account do
 
   describe '#withdraw' do
     it 'should subtract value from balance' do
-      account.deposit(100, event)
+      account.deposit(100)
       account.withdraw(50)
       expect(account.balance).to eq 50
     end
@@ -64,17 +57,13 @@ describe Account do
       expect { account.withdraw(-1) }
             .to raise_error('Input Error: Entry must be a number bigger than 0')
     end
-    it 'should create Event with negative value, new balance and timestamp' do
+    it 'should call add @event_log.add method with correct arguments' do
       time = Time.now
       Timecop.freeze(time)
-      account.deposit(50, event)
-      account.withdraw(25, event)
-      expect(event).to have_received(:new)
+      account.deposit(50)
+      account.withdraw(25)
+      expect(event_log).to have_received(:add)
         .with(value: -25, balance: 25, timestamp: time)
-    end
-    it 'should record deposit event in history array' do
-      expect { account.deposit(50, event) }
-        .to change { account.history.count }.from(0).to(1)
     end
     it 'should accept decimals' do
       account.deposit(30)
@@ -84,9 +73,9 @@ describe Account do
   end
 
   describe '#statement' do
-    it 'should call the Printer.statement method with the account as argument' do
+    it 'should call the Printer.statement method with the event_log as argument' do
       account.statement
-      expect(printer).to have_received(:statement).with(account)
+      expect(printer).to have_received(:statement).with(event_log)
     end
     it 'should console log whatever the printer returns' do
       expect { account.statement }.to output("Stand in for statement\n").to_stdout
