@@ -34,6 +34,10 @@ describe Account do
       expect { account.deposit(0) }.to raise_error("Error: Invalid Entry")
       expect { account.deposit(-1) }.to raise_error("Error: Invalid Entry")
     end
+    it 'should accept decimals' do
+      account.deposit(125.75)
+      expect(account.balance).to eq 125.75
+    end
   end
 
   describe '#withdraw' do
@@ -61,6 +65,11 @@ describe Account do
     end
     it 'should record deposit event in history array' do
       expect { account.deposit(50, event) }.to change{ account.history.count }.from(0).to(1)
+    end
+    it 'should accept decimals' do
+      account.deposit(30)
+      account.withdraw(25.25)
+      expect(account.balance).to eq 4.75
     end
   end
 end
