@@ -1,15 +1,13 @@
 class Printer
-
   def self.statement(account)
-    result = "date || credit || debit || balance"
-    account.history.reverse.each do |event|
-      if event.value > 0
-        result += "\n#{format_date(event.timestamp)} || #{format_money(event.value)} || || #{format_money(event.balance)}"
-      else
-        result += "\n#{format_date(event.timestamp)} || || #{format_money(-event.value)} || #{format_money(event.balance)}"
-      end
+    statement_array = account.history.map do |event|
+      date = "#{format_date(event.timestamp)} || "
+      credit = event.value > 0 ? "#{format_money(event.value)} || " : '|| '
+      debit = event.value > 0 ? '|| ' : "#{format_money(-event.value)} || "
+      balance = format_money(event.balance)
+      date + credit + debit + balance
     end
-    result
+    statement_array.unshift('date || credit || debit || balance').join("\n")
   end
 
   private
@@ -19,6 +17,6 @@ class Printer
   end
 
   def self.format_money(value)
-    sprintf "%.2f", value
+    format '%.2f', value
   end
 end

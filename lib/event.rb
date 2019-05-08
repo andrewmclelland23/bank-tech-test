@@ -1,5 +1,4 @@
 class Event
-
   attr_reader :value, :balance, :timestamp
 
   def initialize(value:, balance:, timestamp:)

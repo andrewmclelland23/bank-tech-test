@@ -1,7 +1,6 @@
 require_relative 'event'
 
 class Account
-
   attr_reader :balance, :history
 
   def initialize
@@ -11,8 +10,10 @@ class Account
 
   def deposit(value, event = Event)
     invalid_entry_error unless value.is_a?(Numeric) && value > 0
+
     @balance += value
-    @history << event.new(value: value, balance: @balance, timestamp: Time.now)
+    new_event = event.new(value: value, balance: @balance, timestamp: Time.now)
+    @history.unshift new_event
   end
 
   def withdraw(value, event = Event)
@@ -20,16 +21,17 @@ class Account
     insufficient_fund_error unless @balance >= value
 
     @balance -= value
-    @history << event.new(value: -value, balance: @balance, timestamp: Time.now)
+    new_event = event.new(value: -value, balance: @balance, timestamp: Time.now)
+    @history.unshift new_event
   end
 
   private
 
   def insufficient_fund_error
-    raise "Error: Insufficient Funds"
+    raise 'Account Error: Insufficient Funds'
   end
 
   def invalid_entry_error
-    raise "Error: Invalid Entry"
+    raise 'Input Error: Entry must be a number bigger than 0'
   end
 end
