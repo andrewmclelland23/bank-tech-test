@@ -2,8 +2,9 @@ require 'account'
 require 'timecop'
 
 describe Account do
-  let(:event) { double :event, new: 'something' }
-  subject(:account) { described_class.new }
+  let(:event) { double :Event, new: 'something' }
+  let(:printer) { double :printer, statement: 'Stand in for statement' }
+  subject(:account) { described_class.new(printer) }
 
   it 'should have 0 balance when initialised' do
     expect(account.balance).to eq 0
@@ -79,6 +80,16 @@ describe Account do
       account.deposit(30)
       account.withdraw(25.25)
       expect(account.balance).to eq 4.75
+    end
+  end
+
+  describe '#statement' do
+    it 'should call the Printer.statement method with the account as argument' do
+      account.statement
+      expect(printer).to have_received(:statement).with(account)
+    end
+    it 'should console log whatever the printer returns' do
+      expect { account.statement }.to output("Stand in for statement\n").to_stdout
     end
   end
 end

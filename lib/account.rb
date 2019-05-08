@@ -1,11 +1,13 @@
 require_relative 'event'
+require_relative 'printer'
 
 class Account
   attr_reader :balance, :history
 
-  def initialize
+  def initialize(printer = Printer)
     @balance = 0
     @history = []
+    @printer = printer
   end
 
   def deposit(value, event = Event)
@@ -23,6 +25,10 @@ class Account
     @balance -= value
     new_event = event.new(value: -value, balance: @balance, timestamp: Time.now)
     @history.unshift new_event
+  end
+
+  def statement
+    puts @printer.statement(self)
   end
 
   private
