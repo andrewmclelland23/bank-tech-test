@@ -3,8 +3,11 @@ require 'timecop'
 
 describe Account do
   let(:event_log) { double :event_log, add: 'something' }
-  let(:printer) { double :printer, statement: 'Stand in for statement' }
-  subject(:account) { described_class.new(printer, event_log) }
+  let(:print) { double :print, statement: 'Stand in for statement',
+                  deposit_message: 'test deposit message',
+                  withdrawal_message: 'test withdrawal message'
+                }
+  subject(:account) { described_class.new(print, event_log) }
 
   it 'should have 0 balance when initialised' do
     expect(account.balance).to eq 0
@@ -34,6 +37,10 @@ describe Account do
     it 'should accept decimals' do
       account.deposit(125.75)
       expect(account.balance).to eq 125.75
+    end
+    it 'should call deposit_message on print with new balance' do
+      account.deposit(20)
+      expect(print).to have_received(:deposit_message).with(20)
     end
   end
 
@@ -70,15 +77,17 @@ describe Account do
       account.withdraw(25.25)
       expect(account.balance).to eq 4.75
     end
+    it 'should call withdrawal_message on print with new balance' do
+      account.deposit(100)
+      account.withdraw(20)
+      expect(print).to have_received(:withdrawal_message).with(80)
+    end
   end
 
   describe '#statement' do
     it 'should call the Printer.statement method with the event_log as argument' do
       account.statement
-      expect(printer).to have_received(:statement).with(event_log)
-    end
-    it 'should console log whatever the printer returns' do
-      expect { account.statement }.to output("Stand in for statement\n").to_stdout
+      expect(print).to have_received(:statement).with(event_log)
     end
   end
 end

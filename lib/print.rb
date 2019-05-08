@@ -1,4 +1,4 @@
-class Printer
+class Print
   def self.statement(event_log)
     statement_array = event_log.events.map do |event|
       date = "#{format_date(event.timestamp)} || "
@@ -7,7 +7,15 @@ class Printer
       balance = format_money(event.balance)
       date + credit + debit + balance
     end
-    statement_array.unshift('date || credit || debit || balance').join("\n")
+    puts statement_array.unshift('date || credit || debit || balance').join("\n")
+  end
+
+  def self.deposit_message(balance)
+    puts "Deposit succesful\nBalance: £#{format_money(balance)}"
+  end
+
+  def self.withdrawal_message(balance)
+    puts "Withdrawal succesful\nBalance: £#{format_money(balance)}"
   end
 
   private

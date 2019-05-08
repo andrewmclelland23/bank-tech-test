@@ -1,13 +1,13 @@
 require_relative 'event_log'
-require_relative 'printer'
+require_relative 'print'
 
 class Account
   attr_reader :balance
 
-  def initialize(printer = Printer, event_log = EventLog.new)
+  def initialize(print = Print, event_log = EventLog.new)
     @balance = 0
     @event_log = event_log
-    @printer = printer
+    @print = print
   end
 
   def deposit(value)
@@ -15,6 +15,7 @@ class Account
 
     @balance += value
     @event_log.add(value: value, balance: @balance, timestamp: Time.now)
+    @print.deposit_message(@balance)
   end
 
   def withdraw(value)
@@ -23,10 +24,11 @@ class Account
 
     @balance -= value
     @event_log.add(value: -value, balance: @balance, timestamp: Time.now)
+    @print.withdrawal_message(@balance)
   end
 
   def statement
-    puts @printer.statement(@event_log)
+    @print.statement(@event_log)
   end
 
   private
