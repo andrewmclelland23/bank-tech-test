@@ -1,8 +1,9 @@
 require 'account'
+require 'timecop'
 
 describe Account do
 
-  let(:event) { double :event, :create => 'something' }
+  let(:event) { double :event, :new => 'something' }
   subject(:account) { described_class.new }
 
   it 'should have 0 balance when initialised' do
@@ -17,11 +18,11 @@ describe Account do
       account.deposit(50, event)
       expect(account.balance).to eq 50
     end
-    it 'should create a new deposit Event with new balance and timestamp' do
+    it 'should create a new Event with value, new balance and timestamp' do
       time = Time.now
       Timecop.freeze(time)
       account.deposit(50, event)
-      expect(event).to have_received(:create).with(50, time)
+      expect(event).to have_received(:new).with(value: 50, balance: 50, timestamp: time)
     end
     it 'should record deposit event in history array' do
       expect { account.deposit(50, event) }.to change{ account.history.count }.from(0).to(1)
@@ -36,6 +37,16 @@ describe Account do
     end
     it 'should raise an error if withdaw will bring account to negative balance' do
       expect { account.withdraw(1) }.to raise_error("Error: Insufficient Funds")
+    end
+    it 'should create a new Event with negative value, new balance and timestamp' do
+      time = Time.now
+      Timecop.freeze(time)
+      account.deposit(50, event)
+      account.withdraw(25, event)
+      expect(event).to have_received(:new).with(value: -25, balance: 25, timestamp: time)
+    end
+    it 'should record deposit event in history array' do
+      expect { account.deposit(50, event) }.to change{ account.history.count }.from(0).to(1)
     end
   end
 end

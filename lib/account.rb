@@ -1,5 +1,3 @@
-require 'timecop'
-
 class Account
 
   attr_reader :balance, :history
@@ -9,13 +7,18 @@ class Account
     @history = []
   end
 
-  def deposit(value, event = Event.new)
+  def deposit(value, event = Event)
     @balance += value
-    @history << event.create(value, Time.now)
+    event.new(value: value, balance: @balance, timestamp: Time.now)
+    @history << event
   end
 
-  def withdraw(value)
-    @balance < value ? insufficient_fund_error : @balance -= value
+  def withdraw(value, event = Event)
+    insufficient_fund_error unless @balance >= value
+
+    @balance -= value
+    event.new(value: -value, balance: @balance, timestamp: Time.now)
+    @history << event
   end
 
   private
