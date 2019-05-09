@@ -1,11 +1,14 @@
 # Responsible for printing messages
-class Print
+module Print
+
+  STATEMENT_HEADER = 'date || credit || debit || balance'
+
   def self.statement(event_log)
     statement = event_log.events.map do |event|
       [format_date(event.timestamp), format_credit(event.value),
        format_debit(event.value), format_money(event.balance)].join('|| ')
     end
-    puts statement.unshift('date || credit || debit || balance').join("\n")
+    puts statement.unshift(STATEMENT_HEADER).join("\n")
   end
 
   def self.deposit_message(balance)

@@ -1,18 +1,21 @@
 require_relative 'event_log'
 require_relative 'print'
+require_relative 'input_validation'
 
 # Responsible for managing balance through withdrawals and deposits
 class Account
+
   attr_reader :balance
 
-  def initialize(print = Print, event_log = EventLog.new)
+  def initialize(print: Print, event_log: EventLog.new, iv: InputValidation)
     @balance = 0
     @event_log = event_log
     @print = print
+    @input_validation = iv
   end
 
   def deposit(value)
-    invalid_entry_error unless value.is_a?(Numeric) && value > 0
+    @input_validation.deposit(value: value)
 
     @balance += value
     @event_log.add(value: value, balance: @balance, timestamp: Time.now)
@@ -20,8 +23,7 @@ class Account
   end
 
   def withdraw(value)
-    invalid_entry_error unless value.is_a?(Numeric) && value > 0
-    insufficient_fund_error unless @balance >= value
+    @input_validation.withdraw(value: value, balance: @balance)
 
     @balance -= value
     @event_log.add(value: -value, balance: @balance, timestamp: Time.now)
@@ -30,15 +32,5 @@ class Account
 
   def statement
     @print.statement(@event_log)
-  end
-
-  private
-
-  def insufficient_fund_error
-    raise 'Account Error: Insufficient Funds'
-  end
-
-  def invalid_entry_error
-    raise 'Input Error: Entry must be a number bigger than 0'
   end
 end

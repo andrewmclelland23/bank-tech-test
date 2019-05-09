@@ -3,12 +3,14 @@ require 'timecop'
 
 describe Account do
   let(:event_log) { double :event_log, add: 'something' }
-  let(:print) do
-    double :print, statement: 'Stand in for statement',
-                   deposit_message: 'test deposit message',
-                   withdrawal_message: 'test withdrawal message'
-  end
-  subject(:account) { described_class.new(print, event_log) }
+  let(:print) { double :print,
+                       statement: 'Stand in for statement',
+                       deposit_message: 'test deposit message',
+                       withdrawal_message: 'test withdrawal message'
+              }
+  let(:iv) { double :input_validation, deposit: 'err', withdraw: 'err'}
+  subject(:account) { described_class.new(print: print, event_log: event_log,
+                                          iv: iv) }
 
   it 'should have 0 balance when initialised' do
     expect(account.balance).to eq 0
@@ -26,15 +28,9 @@ describe Account do
       expect(event_log).to have_received(:add)
         .with(value: 50, balance: 50, timestamp: time)
     end
-    it 'should raise an error if value is not a number' do
-      expect { account.deposit('hi') }
-        .to raise_error('Input Error: Entry must be a number bigger than 0')
-    end
-    it 'should raise an error if value is <= 0' do
-      expect { account.deposit(0) }
-        .to raise_error('Input Error: Entry must be a number bigger than 0')
-      expect { account.deposit(-1) }
-        .to raise_error('Input Error: Entry must be a number bigger than 0')
+    it 'should call input_validation.deposit' do
+      account.deposit(5)
+      expect(iv).to have_received(:deposit).with(value: 5)
     end
     it 'should accept decimals' do
       account.deposit(125.75)
@@ -52,19 +48,9 @@ describe Account do
       account.withdraw(50)
       expect(account.balance).to eq 50
     end
-    it 'should raise error if withdaw will bring account to negative balance' do
-      expect { account.withdraw(1) }
-        .to raise_error('Account Error: Insufficient Funds')
-    end
-    it 'should raise error if value is not a number' do
-      expect { account.withdraw('hi') }
-        .to raise_error('Input Error: Entry must be a number bigger than 0')
-    end
-    it 'should raise an error if value is <= 0' do
-      expect { account.withdraw(0) }
-        .to raise_error('Input Error: Entry must be a number bigger than 0')
-      expect { account.withdraw(-1) }
-        .to raise_error('Input Error: Entry must be a number bigger than 0')
+    it 'should call input_validation.withdraw' do
+      account.withdraw(5)
+      expect(iv).to have_received(:withdraw).with(value: 5, balance: 0)
     end
     it 'should call add @event_log.add method with correct arguments' do
       time = Time.now
